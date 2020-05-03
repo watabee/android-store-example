@@ -1,21 +1,22 @@
 package com.github.watabee.storeexample
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dropbox.android.external.store4.MemoryPolicy
 import com.dropbox.android.external.store4.SourceOfTruth
 import com.dropbox.android.external.store4.StoreBuilder
-import com.dropbox.android.external.store4.StoreRequest
 import com.dropbox.android.external.store4.get
-import com.dropbox.android.external.store4.nonFlowFetcher
 import com.dropbox.android.external.store4.nonFlowValueFetcher
 import com.github.watabee.storeexample.api.Article
 import com.github.watabee.storeexample.api.DevApi
+import com.github.watabee.storeexample.api.DevConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -39,9 +40,9 @@ class MainViewModel : ViewModel() {
 
     private val devApi: DevApi = retrofit.create(DevApi::class.java)
 
-    @OptIn(ExperimentalTime::class)
+    @OptIn(ExperimentalTime::class, ExperimentalCoroutinesApi::class, FlowPreview::class)
     private val store = StoreBuilder.from(
-        nonFlowValueFetcher<Int, List<Article>> { page -> devApi.findArticles(page) }
+        nonFlowValueFetcher<DevConfig, List<Article>> { config -> devApi.findArticles(config.page, config.tag) }
     ).cachePolicy(
         MemoryPolicy.builder()
             .setMemorySize(200)
@@ -49,11 +50,13 @@ class MainViewModel : ViewModel() {
             .build()
     ).build()
 
+    private val _articles = MutableLiveData<List<Article>>()
+    val articles: LiveData<List<Article>> = _articles
+
     fun findArticles() {
         viewModelScope.launch {
             try {
-                val articles = store.get(0)
-                Log.e("MainViewModel", "articles = $articles")
+                _articles.value = store.get(DevConfig(0, "android"))
             } catch (e: Throwable) {
                 Log.e("MainViewModel", "error: $e")
             }
