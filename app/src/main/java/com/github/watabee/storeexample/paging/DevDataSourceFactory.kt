@@ -6,11 +6,18 @@ import androidx.paging.DataSource
 import com.dropbox.android.external.store4.Store
 import com.github.watabee.storeexample.api.Article
 import com.github.watabee.storeexample.api.DevConfig
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 
-class DevDataSourceFactory(
-    private val tag: String,
+class DevDataSourceFactory @AssistedInject constructor(
+    @Assisted private val tag: String,
     private val store: Store<DevConfig, List<Article>>
 ) : DataSource.Factory<Int, Article>() {
+
+    @AssistedInject.Factory
+    interface Factory {
+        fun create(tag: String): DevDataSourceFactory
+    }
 
     private val _dataSource = MutableLiveData<DevDataSource>()
     val dataSource: LiveData<DevDataSource> = _dataSource

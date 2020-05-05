@@ -91,6 +91,12 @@ dependencies {
     implementation "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
+    def assisted_inject_version = "0.5.2"
+    compileOnly "com.squareup.inject:assisted-inject-annotations:$assisted_inject_version"
+    kapt "com.squareup.inject:assisted-inject-processor:$assisted_inject_version"
+    compileOnly "com.squareup.inject:assisted-inject-annotations-dagger2:$assisted_inject_version"
+    kapt "com.squareup.inject:assisted-inject-processor-dagger2:$assisted_inject_version"
+
     implementation "com.github.hadilq.liveevent:liveevent:1.2.0"
 
     implementation 'com.jakewharton.timber:timber:4.7.1'

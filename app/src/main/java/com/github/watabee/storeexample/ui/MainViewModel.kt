@@ -5,11 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
-import androidx.paging.toLiveData
-import com.dropbox.android.external.store4.Store
 import com.github.watabee.storeexample.api.Article
-import com.github.watabee.storeexample.api.DevConfig
-import com.github.watabee.storeexample.paging.DevDataSourceFactory
 import com.github.watabee.storeexample.paging.NetworkState
 import com.github.watabee.storeexample.repository.DevRepository
 import com.hadilq.liveevent.LiveEvent
@@ -18,9 +14,10 @@ import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
-    private val repository: DevRepository
+    repositoryFactory: DevRepository.Factory
 ) : ViewModel() {
 
+    private val repository: DevRepository = repositoryFactory.create("android")
     private val refreshEvent = LiveEvent<Unit>()
 
     val networkState: LiveData<NetworkState> = repository.networkState

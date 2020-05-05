@@ -9,11 +9,20 @@ import com.github.watabee.storeexample.api.Article
 import com.github.watabee.storeexample.api.DevConfig
 import com.github.watabee.storeexample.paging.DevDataSourceFactory
 import com.github.watabee.storeexample.paging.NetworkState
-import javax.inject.Inject
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 
-class DevRepository @Inject constructor(private val store: Store<DevConfig, List<Article>>) {
+class DevRepository @AssistedInject constructor(
+    @Assisted private val tag: String,
+    private val store: Store<DevConfig, List<Article>>,
+    factory: DevDataSourceFactory.Factory
+) {
+    @AssistedInject.Factory
+    interface Factory {
+        fun create(tag: String): DevRepository
+    }
 
-    private val dataSourceFactory = DevDataSourceFactory("android", store)
+    private val dataSourceFactory: DevDataSourceFactory = factory.create(tag)
     val networkState: LiveData<NetworkState> = dataSourceFactory.dataSource.switchMap { it.networkState }
     val articles: LiveData<PagedList<Article>> =
         dataSourceFactory.toLiveData(
@@ -29,7 +38,7 @@ class DevRepository @Inject constructor(private val store: Store<DevConfig, List
     }
 
     suspend fun refresh() {
-        store.clear(DevConfig(1, PAGE_SIZE, "android"))
+        store.clear(DevConfig(1, PAGE_SIZE, tag))
         dataSourceFactory.dataSource.value?.invalidate()
     }
 
