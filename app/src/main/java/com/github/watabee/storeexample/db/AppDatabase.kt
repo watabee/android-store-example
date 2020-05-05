@@ -9,7 +9,7 @@ import androidx.room.TypeConverters
 import java.util.Date
 
 @Database(
-    entities = [ArticleEntity::class, TagEntity::class, ArticleTagCrossRefEntity::class],
+    entities = [ArticleEntity::class],
     version = 1,
     exportSchema = false
 )

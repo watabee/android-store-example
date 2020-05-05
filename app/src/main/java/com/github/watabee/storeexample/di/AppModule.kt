@@ -6,6 +6,6 @@ import dagger.Module
 @AssistedModule
 @Module(
     subcomponents = [ActivityComponent::class],
-    includes = [NetworkModule::class, DbModule::class, StoreModule::class, ViewModelModule::class, AssistedInject_AppModule::class]
+    includes = [NetworkModule::class, DbModule::class, StoreModule::class, AssistedInject_AppModule::class]
 )
 abstract class AppModule

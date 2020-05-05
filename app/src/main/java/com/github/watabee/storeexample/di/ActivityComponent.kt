@@ -12,10 +12,12 @@ import javax.inject.Scope
 annotation class ActivityScope
 
 @ActivityScope
-@Subcomponent(modules = [])
+@Subcomponent(modules = [ActivityModule::class])
 interface ActivityComponent {
 
     fun inject(activity: MainActivity)
+
+    fun fragmentComponentFactory(): FragmentComponent.Factory
 
     @Subcomponent.Factory
     interface Factory {

@@ -9,15 +9,22 @@ import com.github.watabee.storeexample.api.Article
 import com.github.watabee.storeexample.paging.NetworkState
 import com.github.watabee.storeexample.repository.DevRepository
 import com.hadilq.liveevent.LiveEvent
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
 
-class MainViewModel @Inject constructor(
+class ArticleViewModel @AssistedInject constructor(
+    @Assisted articleTag: String,
     repositoryFactory: DevRepository.Factory
 ) : ViewModel() {
 
-    private val repository: DevRepository = repositoryFactory.create("android")
+    @AssistedInject.Factory
+    interface Factory {
+        fun create(articleTag: String): ArticleViewModel
+    }
+
+    private val repository: DevRepository = repositoryFactory.create(articleTag)
     private val refreshEvent = LiveEvent<Unit>()
 
     val networkState: LiveData<NetworkState> = repository.networkState

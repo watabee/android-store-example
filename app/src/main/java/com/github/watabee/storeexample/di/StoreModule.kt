@@ -8,7 +8,7 @@ import com.github.watabee.storeexample.api.Article
 import com.github.watabee.storeexample.api.DevApi
 import com.github.watabee.storeexample.api.DevConfig
 import com.github.watabee.storeexample.db.ArticleDao
-import com.github.watabee.storeexample.db.ArticleWithTags
+import com.github.watabee.storeexample.db.ArticleEntity
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,26 +41,27 @@ abstract class StoreModule {
                         val articles = articleDao.findArticles(offset, config.perPage, config.tag)
                         if (articles.isEmpty()) null else articles.map { it.toArticle() }
                     },
-                    writer = { _, articles ->
+                    writer = { config, articles ->
                         Timber.e("writer")
-                        articleDao.insert(articles)
+                        articleDao.insertArticles(
+                            articles.map { article ->
+                                ArticleEntity(0, article.id, article.title, article.description, article.publishedAt, config.tag)
+                            }
+                        )
                     },
                     delete = { config ->
                         Timber.e("delete")
-                        articleDao.deleteByTag(config.tag)
+                        articleDao.deleteArticlesByTag(config.tag)
                     },
                     deleteAll = {
                         Timber.e("deleteAll")
-                        articleDao.deleteAll()
+                        articleDao.deleteArticles()
                     }
                 )
             ).disableCache().build()
         }
 
-        private fun ArticleWithTags.toArticle() =
-            Article(
-                id = article.id, title = article.title, description = article.description,
-                publishedAt = article.publishedAt, tagList = tags
-            )
+        private fun ArticleEntity.toArticle() =
+            Article(id = articleId, title = title, description = description, publishedAt = publishedAt, tagList = listOf(articleTag))
     }
 }
