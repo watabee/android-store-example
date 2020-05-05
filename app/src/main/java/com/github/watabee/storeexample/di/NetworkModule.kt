@@ -8,8 +8,10 @@ import dagger.Module
 import dagger.Provides
 import okhttp3.Cache
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import timber.log.Timber
 import java.io.File
 import java.util.Date
 import javax.inject.Singleton
@@ -22,6 +24,15 @@ abstract class NetworkModule {
         @Provides
         fun provideOkHttpClient(context: Context): OkHttpClient =
             OkHttpClient.Builder()
+                .addInterceptor(
+                    HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
+                        override fun log(message: String) {
+                            Timber.tag("OkHttp").w(message)
+                        }
+                    }).apply {
+                        level = HttpLoggingInterceptor.Level.BODY
+                    }
+                )
                 .cache(Cache(File(context.cacheDir, "okhttp-cache"), 30 * 1024 * 1024))
                 .build()
 
