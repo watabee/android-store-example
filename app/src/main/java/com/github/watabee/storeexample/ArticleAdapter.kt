@@ -3,19 +3,21 @@ package com.github.watabee.storeexample
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.github.watabee.storeexample.api.Article
 
-class ArticleAdapter : ListAdapter<Article, ArticleViewHolder>(createItemCallback()) {
+class ArticleAdapter : PagedListAdapter<Article, ArticleViewHolder>(createItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder {
         return ArticleViewHolder(parent)
     }
 
     override fun onBindViewHolder(holder: ArticleViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val article = getItem(position) ?: return
+        holder.bind(article)
     }
 
     companion object {

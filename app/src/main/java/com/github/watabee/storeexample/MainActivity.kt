@@ -1,12 +1,12 @@
 package com.github.watabee.storeexample
 
 import android.os.Bundle
-import android.widget.Button
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,8 +22,12 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
-        viewModel.articles.observe(this, adapter::submitList)
+        val swipeRefreshLayout: SwipeRefreshLayout = findViewById(R.id.swipe_refresh_layout)
+        swipeRefreshLayout.setOnRefreshListener { viewModel.refresh() }
 
-        viewModel.findArticles()
+        viewModel.articles.observe(this) {
+            swipeRefreshLayout.isRefreshing = false
+            adapter.submitList(it)
+        }
     }
 }
