@@ -1,7 +1,7 @@
 package com.github.watabee.storeexample.di
 
 import androidx.appcompat.app.AppCompatActivity
-import com.github.watabee.storeexample.MainActivity
+import com.github.watabee.storeexample.ui.MainActivity
 import dagger.BindsInstance
 import dagger.Subcomponent
 import javax.inject.Scope

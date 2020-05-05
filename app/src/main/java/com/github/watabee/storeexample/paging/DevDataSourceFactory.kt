@@ -1,5 +1,7 @@
 package com.github.watabee.storeexample.paging
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import com.dropbox.android.external.store4.Store
 import com.github.watabee.storeexample.api.Article
@@ -10,19 +12,12 @@ class DevDataSourceFactory(
     private val store: Store<DevConfig, List<Article>>
 ) : DataSource.Factory<Int, Article>() {
 
-    private var dataSource: DevDataSource? = null
+    private val _dataSource = MutableLiveData<DevDataSource>()
+    val dataSource: LiveData<DevDataSource> = _dataSource
 
     override fun create(): DataSource<Int, Article> {
         val devDataSource = DevDataSource(tag, store)
-        dataSource = devDataSource
+        _dataSource.postValue(devDataSource)
         return devDataSource
-    }
-
-    fun invalidate() {
-        dataSource?.invalidate()
-    }
-
-    fun cancel() {
-        dataSource?.cancel()
     }
 }

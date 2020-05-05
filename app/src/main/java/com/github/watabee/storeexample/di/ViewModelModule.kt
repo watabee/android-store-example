@@ -2,7 +2,7 @@ package com.github.watabee.storeexample.di
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.github.watabee.storeexample.MainViewModel
+import com.github.watabee.storeexample.ui.MainViewModel
 import com.github.watabee.storeexample.ViewModelFactory
 import dagger.Binds
 import dagger.Module

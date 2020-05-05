@@ -1,4 +1,4 @@
-package com.github.watabee.storeexample
+package com.github.watabee.storeexample.ui
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -10,28 +10,30 @@ import com.dropbox.android.external.store4.Store
 import com.github.watabee.storeexample.api.Article
 import com.github.watabee.storeexample.api.DevConfig
 import com.github.watabee.storeexample.paging.DevDataSourceFactory
+import com.github.watabee.storeexample.paging.NetworkState
+import com.github.watabee.storeexample.repository.DevRepository
 import com.hadilq.liveevent.LiveEvent
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
-    private val store: Store<DevConfig, List<Article>>
+    private val repository: DevRepository
 ) : ViewModel() {
-
-    private val dataSourceFactory = DevDataSourceFactory("android", store)
-    val articles: LiveData<PagedList<Article>> = dataSourceFactory
-        .toLiveData(config = PagedList.Config.Builder().setPageSize(30).setInitialLoadSizeHint(30).build())
 
     private val refreshEvent = LiveEvent<Unit>()
 
+    val networkState: LiveData<NetworkState> = repository.networkState
+    val articles: LiveData<PagedList<Article>> = repository.articles
+
     init {
         refreshEvent.asFlow()
-            .onEach {
-                store.clear(DevConfig(1, 30, "android"))
-                dataSourceFactory.invalidate()
-            }
+            .onEach { repository.refresh() }
             .launchIn(viewModelScope)
+    }
+
+    fun retry() {
+        repository.retry()
     }
 
     fun refresh() {
@@ -40,6 +42,6 @@ class MainViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        dataSourceFactory.cancel()
+        repository.cancel()
     }
 }

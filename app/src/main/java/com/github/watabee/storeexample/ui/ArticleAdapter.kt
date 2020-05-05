@@ -1,12 +1,12 @@
-package com.github.watabee.storeexample
+package com.github.watabee.storeexample.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.github.watabee.storeexample.R
 import com.github.watabee.storeexample.api.Article
 
 class ArticleAdapter : PagedListAdapter<Article, ArticleViewHolder>(createItemCallback()) {
@@ -18,6 +18,10 @@ class ArticleAdapter : PagedListAdapter<Article, ArticleViewHolder>(createItemCa
     override fun onBindViewHolder(holder: ArticleViewHolder, position: Int) {
         val article = getItem(position) ?: return
         holder.bind(article)
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return R.layout.list_item_article
     }
 
     companion object {
