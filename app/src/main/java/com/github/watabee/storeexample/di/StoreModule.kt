@@ -27,22 +27,16 @@ abstract class StoreModule {
         fun provideStore(devApi: DevApi, articleDao: ArticleDao): Store<DevConfig, List<Article>> {
             return StoreBuilder.from<DevConfig, List<Article>, List<Article>>(
                 nonFlowValueFetcher { config ->
-                    Timber.e("nonFlowValueFetcher, config = $config")
-                    val articles = devApi.findArticles(config.page, config.perPage, config.tag)
-                    articles.forEach {
-                        Timber.e("    $it")
-                    }
-                    articles
+                    devApi.findArticles(config.page, config.perPage, config.tag)
                 },
                 sourceOfTruth = SourceOfTruth.fromNonFlow(
                     reader = { config ->
-                        Timber.e("reader, config = $config")
                         val offset = (config.page - 1) * config.perPage
                         val articles = articleDao.findArticles(offset, config.perPage, config.tag)
+                        // Return null, then store fetch data using fetcher.
                         if (articles.isEmpty()) null else articles.map { it.toArticle() }
                     },
                     writer = { config, articles ->
-                        Timber.e("writer")
                         articleDao.insertArticles(
                             articles.map { article ->
                                 ArticleEntity(0, article.id, article.title, article.description, article.publishedAt, config.tag)
@@ -50,11 +44,9 @@ abstract class StoreModule {
                         )
                     },
                     delete = { config ->
-                        Timber.e("delete")
                         articleDao.deleteArticlesByTag(config.tag)
                     },
                     deleteAll = {
-                        Timber.e("deleteAll")
                         articleDao.deleteArticles()
                     }
                 )
