@@ -48,6 +48,6 @@ class DevRepository @AssistedInject constructor(
 
     companion object {
         private const val PAGE_SIZE = 30
-        private const val PREFETCH_DISTANCE = 2
+        private const val PREFETCH_DISTANCE = 20
     }
 }
