@@ -11,9 +11,11 @@ import com.github.watabee.storeexample.repository.DevRepository
 import com.hadilq.liveevent.LiveEvent
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ArticleViewModel @AssistedInject constructor(
     @Assisted articleTag: String,
     repositoryFactory: DevRepository.Factory

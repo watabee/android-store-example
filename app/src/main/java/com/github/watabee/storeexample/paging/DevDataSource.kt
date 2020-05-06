@@ -8,12 +8,14 @@ import com.dropbox.android.external.store4.StoreRequest
 import com.dropbox.android.external.store4.StoreResponse
 import com.github.watabee.storeexample.api.Article
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class DevDataSource(
     private val tag: String,
     private val store: Store<DevConfig, List<Article>>
