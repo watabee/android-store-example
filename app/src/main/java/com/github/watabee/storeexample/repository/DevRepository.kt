@@ -6,7 +6,7 @@ import androidx.paging.PagedList
 import androidx.paging.toLiveData
 import com.dropbox.android.external.store4.Store
 import com.github.watabee.storeexample.api.Article
-import com.github.watabee.storeexample.api.DevConfig
+import com.github.watabee.storeexample.paging.DevConfig
 import com.github.watabee.storeexample.paging.DevDataSourceFactory
 import com.github.watabee.storeexample.paging.NetworkState
 import com.squareup.inject.assisted.Assisted

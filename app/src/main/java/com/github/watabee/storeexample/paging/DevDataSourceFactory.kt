@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import com.dropbox.android.external.store4.Store
 import com.github.watabee.storeexample.api.Article
-import com.github.watabee.storeexample.api.DevConfig
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 

@@ -6,14 +6,13 @@ import com.dropbox.android.external.store4.StoreBuilder
 import com.dropbox.android.external.store4.nonFlowValueFetcher
 import com.github.watabee.storeexample.api.Article
 import com.github.watabee.storeexample.api.DevApi
-import com.github.watabee.storeexample.api.DevConfig
+import com.github.watabee.storeexample.paging.DevConfig
 import com.github.watabee.storeexample.db.ArticleDao
 import com.github.watabee.storeexample.db.ArticleEntity
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import timber.log.Timber
 import javax.inject.Singleton
 import kotlin.time.ExperimentalTime
 

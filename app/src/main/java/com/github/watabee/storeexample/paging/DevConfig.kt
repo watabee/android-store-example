@@ -1,4 +1,4 @@
-package com.github.watabee.storeexample.api
+package com.github.watabee.storeexample.paging
 
 data class DevConfig(
     val page: Int,
