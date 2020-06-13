@@ -1,50 +1,35 @@
 package com.github.watabee.storeexample.repository
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.switchMap
-import androidx.paging.PagedList
-import androidx.paging.toLiveData
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.dropbox.android.external.store4.Store
 import com.github.watabee.storeexample.api.Article
 import com.github.watabee.storeexample.paging.DevConfig
-import com.github.watabee.storeexample.paging.DevDataSourceFactory
-import com.github.watabee.storeexample.paging.NetworkState
+import com.github.watabee.storeexample.paging.DevDataSource
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import kotlinx.coroutines.flow.Flow
 
 class DevRepository @AssistedInject constructor(
     @Assisted private val tag: String,
-    private val store: Store<DevConfig, List<Article>>,
-    factory: DevDataSourceFactory.Factory
+    private val store: Store<DevConfig, List<Article>>
 ) {
     @AssistedInject.Factory
     interface Factory {
         fun create(tag: String): DevRepository
     }
 
-    private val dataSourceFactory: DevDataSourceFactory = factory.create(tag)
-    val networkState: LiveData<NetworkState> = dataSourceFactory.dataSource.switchMap { it.networkState }
-    val articles: LiveData<PagedList<Article>> =
-        dataSourceFactory.toLiveData(
-            config = PagedList.Config.Builder()
-                .setPageSize(PAGE_SIZE)
-                .setInitialLoadSizeHint(PAGE_SIZE)
-                .setPrefetchDistance(PREFETCH_DISTANCE)
-                .build()
-        )
-
-    fun retry() {
-        dataSourceFactory.dataSource.value?.retry()
-    }
-
-    suspend fun refresh() {
-        store.clear(DevConfig(1, PAGE_SIZE, tag))
-        dataSourceFactory.dataSource.value?.invalidate()
-    }
-
-    fun cancel() {
-        dataSourceFactory.dataSource.value?.cancel()
-    }
+    val pagingData: Flow<PagingData<Article>> = Pager(
+        config = PagingConfig(
+            pageSize = PAGE_SIZE,
+            prefetchDistance = PREFETCH_DISTANCE,
+            initialLoadSize = PAGE_SIZE,
+            enablePlaceholders = false
+        ),
+        initialKey = 1
+    ) { DevDataSource(tag, store) }
+        .flow
 
     companion object {
         private const val PAGE_SIZE = 30

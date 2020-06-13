@@ -7,14 +7,15 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.MergeAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.watabee.storeexample.R
-import com.github.watabee.storeexample.paging.NetworkState
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ArticleFragment : BaseFragment(R.layout.fragment_articles) {
@@ -40,51 +41,31 @@ class ArticleFragment : BaseFragment(R.layout.fragment_articles) {
         super.onViewCreated(view, savedInstanceState)
 
         val articleAdapter = ArticleAdapter()
-        val loadingAdapter = LoadingAdapter()
-        val errorAdapter = ErrorAdapter { viewModel.retry() }
-        val mergeAdapter = MergeAdapter(articleAdapter, loadingAdapter, errorAdapter)
 
         val recyclerView: RecyclerView = view.findViewById(R.id.recycler_view)
-        recyclerView.adapter = mergeAdapter
+        recyclerView.adapter = articleAdapter.withLoadStateFooter(LoadStateAdapter(articleAdapter::retry))
+
         recyclerView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
 
         val swipeRefreshLayout: SwipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout)
-        swipeRefreshLayout.setOnRefreshListener { viewModel.refresh() }
+        swipeRefreshLayout.setOnRefreshListener { articleAdapter.refresh() }
 
-        viewModel.articles.observe(viewLifecycleOwner, articleAdapter::submitList)
+        lifecycleScope.launch {
+            viewModel.articles.collectLatest { articleAdapter.submitData(it) }
+        }
 
-        viewModel.networkState.observe(viewLifecycleOwner) { networkState ->
-            when (networkState) {
-                is NetworkState.Loading -> {
-                    if (networkState.isInitial) {
-                        swipeRefreshLayout.isRefreshing = true
-                    } else {
-                        loadingAdapter.isLoading = true
-                        errorAdapter.isError = false
-                    }
-                }
-                is NetworkState.Loaded -> {
-                    if (networkState.isInitial) {
-                        swipeRefreshLayout.isRefreshing = false
-                    } else {
-                        loadingAdapter.isLoading = false
-                        errorAdapter.isError = false
-                    }
-                }
-                is NetworkState.Error -> {
-                    if (networkState.isInitial) {
-                        swipeRefreshLayout.isRefreshing = false
+        lifecycleScope.launch {
+            articleAdapter.loadStateFlow.collectLatest { loadStates ->
+                swipeRefreshLayout.isRefreshing = loadStates.refresh is LoadState.Loading
 
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setTitle("Error")
-                            .setMessage("Retry?")
-                            .setPositiveButton(android.R.string.yes) { _, _ -> viewModel.retry() }
-                            .setNegativeButton(android.R.string.no, null)
-                            .show()
-                    } else {
-                        loadingAdapter.isLoading = false
-                        errorAdapter.isError = true
-                    }
+                if (loadStates.refresh is LoadState.Error) {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("Error")
+                        .setMessage("Retry?")
+                        .setPositiveButton(android.R.string.yes) { _, _ -> articleAdapter.retry() }
+                        .setNegativeButton(android.R.string.no, null)
+                        .show()
+
                 }
             }
         }
