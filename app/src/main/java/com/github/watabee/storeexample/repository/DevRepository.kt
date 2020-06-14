@@ -7,15 +7,13 @@ import com.dropbox.android.external.store4.Store
 import com.github.watabee.storeexample.api.Article
 import com.github.watabee.storeexample.paging.DevConfig
 import com.github.watabee.storeexample.paging.DevDataSource
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class DevRepository @AssistedInject constructor(
-    @Assisted private val tag: String,
+class DevRepository(
+    private val tag: String,
     private val store: Store<DevConfig, List<Article>>
 ) {
-    @AssistedInject.Factory
     interface Factory {
         fun create(tag: String): DevRepository
     }
@@ -35,4 +33,8 @@ class DevRepository @AssistedInject constructor(
         private const val PAGE_SIZE = 30
         private const val PREFETCH_DISTANCE = 20
     }
+}
+
+class DevRepositoryFactory @Inject constructor(private val store: Store<DevConfig, List<Article>>) : DevRepository.Factory {
+    override fun create(tag: String): DevRepository = DevRepository(tag, store)
 }

@@ -1,6 +1,7 @@
 package com.github.watabee.storeexample.ui
 
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -8,11 +9,12 @@ import androidx.viewpager2.widget.ViewPager2
 import com.github.watabee.storeexample.R
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
 
-class MainActivity : BaseActivity(R.layout.activity_main) {
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        activityComponent.inject(this)
         super.onCreate(savedInstanceState)
 
         val viewPager: ViewPager2 = findViewById(R.id.view_pager)
