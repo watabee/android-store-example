@@ -1,9 +1,9 @@
 package com.github.watabee.storeexample.ui
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -14,11 +14,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.watabee.storeexample.R
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ArticleFragment : BaseFragment(R.layout.fragment_articles) {
+@AndroidEntryPoint
+class ArticleFragment : Fragment(R.layout.fragment_articles) {
 
     @Inject lateinit var viewModelFactory: ArticleViewModel.Factory
 
@@ -30,11 +32,6 @@ class ArticleFragment : BaseFragment(R.layout.fragment_articles) {
                 return viewModelFactory.create(articleTag) as T
             }
         }
-    }
-
-    override fun onAttach(context: Context) {
-        fragmentComponent.inject(this)
-        super.onAttach(context)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

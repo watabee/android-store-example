@@ -5,18 +5,20 @@ import com.github.watabee.storeexample.db.AppDatabase
 import com.github.watabee.storeexample.db.ArticleDao
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Singleton
 
 @Module
-abstract class DbModule {
+@InstallIn(ApplicationComponent::class)
+object DbModule {
 
-    companion object {
-        @Singleton
-        @Provides
-        fun provideAppDatabase(context: Context): AppDatabase = AppDatabase.getInstance(context)
+    @Singleton
+    @Provides
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase = AppDatabase.getInstance(context)
 
-        @Singleton
-        @Provides
-        fun provideArticleDao(database: AppDatabase): ArticleDao = database.articleDao()
-    }
+    @Singleton
+    @Provides
+    fun provideArticleDao(database: AppDatabase): ArticleDao = database.articleDao()
 }

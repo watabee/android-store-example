@@ -4,23 +4,25 @@ import androidx.lifecycle.ViewModel
 import androidx.paging.PagingData
 import com.github.watabee.storeexample.api.Article
 import com.github.watabee.storeexample.repository.DevRepository
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ArticleViewModel @AssistedInject constructor(
-    @Assisted articleTag: String,
+class ArticleViewModel(
+    tag: String,
     repositoryFactory: DevRepository.Factory
 ) : ViewModel() {
 
-    @AssistedInject.Factory
     interface Factory {
-        fun create(articleTag: String): ArticleViewModel
+        fun create(tag: String): ArticleViewModel
     }
 
-    private val repository: DevRepository = repositoryFactory.create(articleTag)
+    private val repository: DevRepository = repositoryFactory.create(tag)
 
     val articles: Flow<PagingData<Article>> = repository.pagingData
+}
+
+class ArticleViewModelFactory @Inject constructor(private val repositoryFactory: DevRepository.Factory) : ArticleViewModel.Factory {
+    override fun create(tag: String): ArticleViewModel = ArticleViewModel(tag, repositoryFactory)
 }
