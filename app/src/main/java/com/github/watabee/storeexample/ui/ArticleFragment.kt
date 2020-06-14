@@ -68,6 +68,14 @@ class ArticleFragment : Fragment(R.layout.fragment_articles) {
         }
     }
 
+    fun scrollToTop() {
+        val recyclerView: RecyclerView = view?.findViewById(R.id.recycler_view) ?: return
+        val itemCount = recyclerView.adapter?.itemCount ?: 0
+        if (itemCount > 0) {
+            recyclerView.layoutManager?.scrollToPosition(0)
+        }
+    }
+
     companion object {
         private const val ARTICLE_TAG = "ARTICLE_TAG"
 

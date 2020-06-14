@@ -24,6 +24,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = Tags.values()[position].value
         }.attach()
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(tab: TabLayout.Tab) {
+                val fragment = supportFragmentManager.findFragmentByTag("f${viewPager.currentItem}") as? ArticleFragment ?: return
+                fragment.scrollToTop()
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab) {
+            }
+        })
     }
 
     private class Adapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
